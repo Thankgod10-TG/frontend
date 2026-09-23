@@ -23,41 +23,44 @@ function Login(){
         })
     }
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+   const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
 
-        setError("");
-        setLoading(true)
-
-        try{
-            const response = await fetch(
-                `${API_URL}/auth/login`,
-                {
-                    method: "POST",
-                    headers:{
-                        "Content-Type": "application/json"
-                    }, 
-                    body: JSON.stringify(formData)
-                }
-            );
-
-            const data = await response.json()
-
-            if(!response.ok){
-                throw new Error(data.message)
+    try {
+        const response = await fetch(
+            `${API_URL}/auth/login`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(formData)
             }
-        
+        );
 
-        //save JWT
-        localStorage.setItem("token", data.token)
-        
-        navigate("/dashboard")
-        }catch(error){
-            setError(error.message);
-        }finally {
-            setLoading(false)
+        const data = await response.json();
+
+        console.log("LOGIN STATUS:", response.status);
+        console.log("LOGIN RESPONSE:", data);
+
+        if (!response.ok) {
+            throw new Error(data.message || "Login failed");
         }
+
+        // Save JWT
+        localStorage.setItem("token", data.token);
+
+        navigate("/dashboard");
+
+    } catch (error) {
+        console.error("LOGIN ERROR:", error);
+        setError(error.message);
+    } finally {
+        setLoading(false);
     }
+};
 
     return(
         <div className="auth-container">
